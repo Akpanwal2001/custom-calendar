@@ -1,0 +1,168 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.custom_calendar {
+  position: relative;
+  margin: 20px auto;
+  width: 350px;
+}
+
+/* =========================== input for date start =========================== */
+.custom_calendar .date_input {
+  height: 40px;
+  min-width: 250px;
+  max-width: 350px;
+}
+
+.custom_calendar .date_input input {
+  height: 100%;
+  width: 100%;
+  border: 1px solid rgb(216, 213, 213);
+  border-radius: 2px;
+  outline: none;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: #b3b3b3;
+}
+
+/* =========================== input for date end =========================== */
+
+/* =========================== calendar start =========================== */
+.custom_calendar .calendar {
+  position: absolute;
+  right: 0px;
+  min-height: 196px;
+  width: 250px;
+  background-color: #eeeef0;
+  border: 1px solid #e2d0ff;
+}
+
+.custom_calendar .calendar .change_year_month {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 20px;
+  background-color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  color: #545454;
+}
+
+.custom_calendar .calendar .change_year_month .next_btn,
+.custom_calendar .calendar .change_year_month .prev_btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.custom_calendar .calendar .change_year_month .next_btn:hover,
+.custom_calendar .calendar .change_year_month .prev_btn:hover {
+  /* border: 1px solid #6610f2; */
+  color: #6610f2;
+}
+
+.custom_calendar .calendar .change_year_month .next_btn:active,
+.custom_calendar .calendar .change_year_month .prev_btn:active {
+  background-color: #6610f2;
+  color: #fff;
+}
+
+.custom_calendar .calendar .change_year_month .selected_month_year {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.custom_calendar .calendar .change_year_month .selected_month_year .year {
+  cursor: pointer;
+}
+
+.custom_calendar .calendar .change_year_month .selected_month_year .year:hover {
+  transform: scale(1.1);
+}
+
+/* =========================== Week days start =========================== */
+.custom_calendar .calendar .week_days {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 1px;
+  padding: 2px;
+  background-color: #e2d0ff;
+}
+
+.custom_calendar .calendar .week_days .week_day {
+  width: 34px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: #efe5ff;
+  border: 1px solid #e8e3f0;
+}
+
+.custom_calendar .calendar .week_days .week_day:hover {
+  background-color: #e2d0ff;
+}
+/* =========================== Week days end =========================== */
+
+/* Days in months start */
+.custom_calendar .calendar .days {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 1px;
+  padding: 2px;
+}
+
+.custom_calendar .calendar .days .day {
+  width: 34px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid #e8e3f0;
+}
+
+.custom_calendar .calendar .days .day.curr_month {
+  background-color: #fff;
+}
+
+.custom_calendar .calendar .days .day.prev_month,
+.custom_calendar .calendar .days .day.next_month {
+  background-color: #d5d3d8;
+  color: #000;
+}
+
+.custom_calendar .calendar .days .day:hover {
+  background-color: #6610f2;
+  color: #fff;
+  transition-duration: 400ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* =========================== Days in months end =========================== */
+
+/* =========================== Functionality Css Start =========================== */
+.custom_calendar .calendar .week_days .week_day.ActiveWeek {
+  background-color: #6610f2;
+  color: #fff;
+}
+
+.custom_calendar .calendar .days .day.ActiveDate {
+  background-color: #6610f2;
+  color: #fff;
+}
+
+/* =========================== Functionality Css End =========================== */
+
+/* =========================== calendar end =========================== */
