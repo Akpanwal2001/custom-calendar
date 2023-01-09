@@ -77,6 +77,7 @@ const CustomCalendar = ({
   const currentDate = new Date().getDate();
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const daysInMonth = (month, year) => {
     const dayInMonth = {
@@ -111,7 +112,7 @@ const CustomCalendar = ({
 
   const getDateObject = (date) => {
     return {
-      day: new Date(date).getDate(),
+      date: new Date(date).getDate(),
       monthName: months[new Date(date).getMonth()].monthName,
       year: new Date(date).getFullYear(),
     };
@@ -129,12 +130,18 @@ const CustomCalendar = ({
     }
   };
 
+  // get Week Day name and Id in any date
+  const getWeekDayName = (date) => {
+    const day = new Date(date).getDay();
+    return weekDays[day];
+  };
+
   // days in Current Month
   const daysInCurrentMonth = (array, monthId, year) => {
     for (let i = 1; i <= daysInMonth(months[monthId].monthName, year); i++) {
       array.push({
         class: "curr_month",
-        day: i,
+        date: i,
         monthName: months[monthId].monthName,
         year: year,
       });
@@ -170,7 +177,7 @@ const CustomCalendar = ({
     ) {
       array.push({
         class: "prev_month",
-        day: i,
+        date: i,
         monthName: months[prevMonthId].monthName,
         year: prevMonthYear,
       });
@@ -195,7 +202,7 @@ const CustomCalendar = ({
     for (let i = 1; i <= nextMonthDaysToShow; i++) {
       array.push({
         class: "next_month",
-        day: i,
+        date: i,
         monthName: months[nextMonthId].monthName,
         year: nextMonthYear,
       });
@@ -227,29 +234,36 @@ const CustomCalendar = ({
     setSelectedYear(getNextMonth(monthId, year).year);
   };
 
+  // select next year
+  const selectNextYear = (year) => {
+    setSelectedYear(selectedYear + 1);
+  };
+  // select previous year
+  const selectPreviousYear = (year) => {
+    setSelectedYear(selectedYear - 1);
+  };
+
   // get full day
-  const getFullDate = (day, monthName, year) => {
-    return `${day < 10 ? `0${day}` : day} ${monthName}, ${year}`;
+  const getFullDate = (date, monthName, year) => {
+    return `${date < 10 ? `0${date}` : date} ${monthName}, ${year}`;
   };
 
   // change selected date
-  const changeSelectedDate = (day, month, year) => {
-    setSelectedDate(day);
+  const changeSelectedDate = (date, month, year) => {
+    setSelectedDate(date);
     setSelectedMonth(monthsIds[month]);
     setSelectedYear(year);
-    return getFullDate(day, month, year);
+    return getFullDate(date, month, year);
   };
 
   // select full week
-  const selectFullWeek = (day, month, year, current) => {
+  const selectFullWeek = (date, month, year, current) => {
     const weekAllDays = [];
     var firstOfWeek =
-      new Date(getFullDate(day, month, year)).getDate() -
-      new Date(getFullDate(day, month, year)).getDay();
+      new Date(getFullDate(date, month, year)).getDate() -
+      new Date(getFullDate(date, month, year)).getDay();
     var lastOfWeek = firstOfWeek + 6;
 
-    // console.log(firstOfWeek);
-    // console.log(lastOfWeek);
     // get the week dates when first date of week is from previous month
     if (firstOfWeek < 1) {
       const previousMonthId = getPrevMonth(monthsIds[month], year).monthId;
@@ -260,14 +274,14 @@ const CustomCalendar = ({
       );
       for (let i = dayInPrevMonth + firstOfWeek; i <= dayInPrevMonth; i++) {
         weekAllDays.push({
-          day: i,
+          date: i,
           monthName: months[previousMonthId].monthName,
           year: previousYear,
         });
       }
       for (let i = 1; i <= lastOfWeek; i++) {
         weekAllDays.push({
-          day: i,
+          date: i,
           monthName: month,
           year: year,
         });
@@ -281,18 +295,17 @@ const CustomCalendar = ({
         months[nextMonthId].monthName,
         nextYear
       );
-      console.log(months[nextMonthId].monthName, nextYear);
 
       for (let i = firstOfWeek; i <= daysInMonth(month, year); i++) {
         weekAllDays.push({
-          day: i,
+          date: i,
           monthName: month,
           year: year,
         });
       }
       for (let i = 1; i <= lastOfWeek - daysInMonth(month, year); i++) {
         weekAllDays.push({
-          day: i,
+          date: i,
           monthName: months[nextMonthId].monthName,
           year: nextYear,
         });
@@ -302,7 +315,7 @@ const CustomCalendar = ({
     else {
       for (let i = firstOfWeek; i <= lastOfWeek; i++) {
         weekAllDays.push({
-          day: i,
+          date: i,
           monthName: month,
           year: year,
         });
@@ -316,16 +329,15 @@ const CustomCalendar = ({
 
   // get selected week start date and end date
   const selectedRangeStartAndEndDate = (array) => {
-    // console.log(array);
     if (array) {
       return {
         start_date: getFullDate(
-          array[0]?.day,
+          array[0]?.date,
           array[0]?.monthName,
           array[0]?.year
         ),
         end_date: getFullDate(
-          array[array.length - 1]?.day,
+          array[array.length - 1]?.date,
           array[array.length - 1]?.monthName,
           array[array.length - 1]?.year
         ),
@@ -350,12 +362,12 @@ const CustomCalendar = ({
   }, [currentDate, currentMonth, currentYear]);
 
   // get next date
-  const getNextDate = (day, month, year) => {
-    if (day < daysInMonth(month, year)) {
-      return { day: day + 1, monthName: month, year };
+  const getNextDate = (date, month, year) => {
+    if (date < daysInMonth(month, year)) {
+      return { date: date + 1, monthName: month, year };
     } else {
       return {
-        day: 1,
+        date: 1,
         monthName:
           months[getNextMonth(monthsIds[month], year).monthId].monthName,
         year: getNextMonth(monthsIds[month], year).year,
@@ -364,16 +376,16 @@ const CustomCalendar = ({
   };
 
   // get All dates between two dates
-  // first date and last date object formate = {day, monthName,  year}
+  // first date and last date object formate = {date, monthName,  year}
   const getDatesInRange = (firstDateObj, lastDateObj) => {
     const DatesList = [];
     var currentDate = getFullDate(
-      firstDateObj.day,
+      firstDateObj.date,
       firstDateObj.monthName,
       firstDateObj.year
     );
     const lastDate = getFullDate(
-      lastDateObj.day,
+      lastDateObj.date,
       lastDateObj.monthName,
       lastDateObj.year
     );
@@ -382,12 +394,12 @@ const CustomCalendar = ({
       DatesList.push(getDateObject(currentDate));
       let nextDateObj = getDateObject(currentDate);
       let nextDate = getNextDate(
-        nextDateObj.day,
+        nextDateObj.date,
         nextDateObj.monthName,
         nextDateObj.year
       );
       currentDate = getFullDate(
-        nextDate.day,
+        nextDate.date,
         nextDate.monthName,
         nextDate.year
       );
@@ -407,41 +419,41 @@ const CustomCalendar = ({
   // all condition for run functions on click on any date
   const runOnClick = (item) => {
     weekSelect
-      ? weekSelect(selectFullWeek(item.day, item.monthName, item.year))
+      ? weekSelect(selectFullWeek(item.date, item.monthName, item.year))
       : dateRangeSelect && !firstDateSelect
       ? setFirstDateSelect({
-          day: item.day,
+          date: item.date,
           monthName: item.monthName,
           year: item.year,
         })
       : firstDateSelect &&
         new Date(
           getFullDate(
-            firstDateSelect.day,
+            firstDateSelect.date,
             firstDateSelect.monthName,
             firstDateSelect.year
           )
         ) > new Date(getFullDate(item.day, item.monthName, item.year))
       ? setFirstDateSelect({
-          day: item.day,
+          date: item.date,
           monthName: item.monthName,
           year: item.year,
         })
       : firstDateSelect && !lastDateSelect
       ? setLastDateSelect({
-          day: item.day,
+          date: item.date,
           monthName: item.monthName,
           year: item.year,
         })
       : firstDateSelect && lastDateSelect
       ? onSelectNewDateRange({
-          day: item.day,
+          date: item.date,
           monthName: item.monthName,
           year: item.year,
         })
       : dateSelect
-      ? dateSelect(changeSelectedDate(item.day, item.monthName, item.year))
-      : console.log(getFullDate(item.day, item.monthName, item.year));
+      ? dateSelect(changeSelectedDate(item.date, item.monthName, item.year))
+      : console.log(getFullDate(item.date, item.monthName, item.year));
   };
 
   const runOnHover = (item) => {
@@ -449,24 +461,24 @@ const CustomCalendar = ({
     !lastDateSelect &&
     new Date(
       getFullDate(
-        firstDateSelect.day,
+        firstDateSelect.date,
         firstDateSelect.monthName,
         firstDateSelect.year
       )
-    ) < new Date(getFullDate(item.day, item.monthName, item.year))
+    ) < new Date(getFullDate(item.date, item.monthName, item.year))
       ? getDatesInRange(
           {
-            day: firstDateSelect.day,
+            date: firstDateSelect.date,
             monthName: firstDateSelect.monthName,
             year: firstDateSelect.year,
           },
           {
-            day: item.day,
+            date: item.date,
             monthName: item.monthName,
             year: item.year,
           }
         )
-      : console.log(getFullDate(item.day, item.monthName, item.year));
+      : console.log(getFullDate(item.date, item.monthName, item.year));
   };
   return (
     <>
@@ -474,7 +486,7 @@ const CustomCalendar = ({
         <div className="date_input">
           <input
             type="text"
-            readOnly
+            onFocus={() => setShowCalendar(true)}
             value={
               weekSelect && activeDates
                 ? `${selectedRangeStartAndEndDate(activeDates)?.start_date} - ${
@@ -488,85 +500,102 @@ const CustomCalendar = ({
             }
           />
         </div>
-        <div className="calendar">
-          <div className="change_year_month">
-            <div
-              className="prev_btn"
-              onClick={() => selectPreviousMonth(selectedMonth, selectedYear)}
-            >
-              &lt;
-            </div>
-            <div className="selected_month_year">
-              {!changeYear ? (
-                <div className="month">{months[selectedMonth].monthName}</div>
-              ) : null}
-              <div className="year" onClick={() => setChangeYear(!changeYear)}>
-                {selectedYear}
-              </div>
-            </div>
-            <div
-              className="next_btn"
-              onClick={() => selectNextMonth(selectedMonth, selectedYear)}
-            >
-              &gt;
-            </div>
-          </div>
-          <div className="week_days">
-            {weekDays?.map((item, index) => (
+        {showCalendar ? (
+          <div className="calendar">
+            <div className="change_year_month">
               <div
-                key={item.id}
-                className={`week_day ${
-                  item.id ==
-                  new Date(
-                    getFullDate(
-                      selectedDate,
-                      months[selectedMonth].monthName,
-                      selectedYear
-                    )
-                  ).getDay()
-                    ? "ActiveWeek"
-                    : ""
-                }`}
+                className="prev_btn"
+                onClick={() => {
+                  changeYear
+                    ? selectPreviousYear(selectedYear)
+                    : selectPreviousMonth(selectedMonth, selectedYear);
+                }}
               >
-                {item?.day?.charAt(0)}
+                &lt;
               </div>
-            ))}
-          </div>
-          <div className="days">
-            {getAllDaysInMonth(selectedMonth, selectedYear)?.map(
-              (item, index) => (
+              <div className="selected_month_year">
+                {!changeYear ? (
+                  <div className="month">{months[selectedMonth].monthName}</div>
+                ) : null}
                 <div
-                  key={index}
-                  className={`day ${item.class} ${
-                    weekSelect || dateRangeSelect
-                      ? activeDates?.find(
-                          (ele) =>
-                            ele.day == item.day &&
-                            ele.monthName == item.monthName &&
-                            ele.year == item.year
-                        )
-                        ? "ActiveDate"
-                        : ""
-                      : dateSelect
-                      ? item.day == selectedDate &&
-                        item.monthName == months[selectedMonth].monthName &&
-                        item.year == selectedYear
-                        ? "ActiveDate"
-                        : ""
+                  className="year"
+                  onClick={() => setChangeYear(!changeYear)}
+                >
+                  {selectedYear}
+                </div>
+              </div>
+              <div
+                className="next_btn"
+                onClick={() => {
+                  changeYear
+                    ? selectNextYear(selectedYear)
+                    : selectNextMonth(selectedMonth, selectedYear);
+                }}
+              >
+                &gt;
+              </div>
+            </div>
+            <div className="week_days">
+              {weekDays?.map((item, index) => (
+                <div
+                  key={item.id}
+                  className={`week_day ${
+                    item.id ==
+                    new Date(
+                      getFullDate(
+                        selectedDate,
+                        months[selectedMonth].monthName,
+                        selectedYear
+                      )
+                    ).getDay()
+                      ? "ActiveWeek"
                       : ""
                   }`}
-                  title={getFullDate(item.day, item.monthName, item.year)}
-                  onClick={() => runOnClick(item)}
-                  onMouseEnter={() => {
-                    dateRangeSelect ? runOnHover(item) : console.log();
-                  }}
                 >
-                  {item.day}
+                  {item?.day?.charAt(0)}
                 </div>
-              )
-            )}
+              ))}
+            </div>
+            <div className="days">
+              {getAllDaysInMonth(selectedMonth, selectedYear)?.map(
+                (item, index) => (
+                  <div
+                    key={index}
+                    className={`day ${item.class} ${
+                      weekSelect || dateRangeSelect
+                        ? activeDates?.find(
+                            (ele) =>
+                              ele.date == item.date &&
+                              ele.monthName == item.monthName &&
+                              ele.year == item.year
+                          )
+                          ? "ActiveDate"
+                          : ""
+                        : dateSelect
+                        ? item.date == selectedDate &&
+                          item.monthName == months[selectedMonth].monthName &&
+                          item.year == selectedYear
+                          ? "ActiveDate"
+                          : ""
+                        : ""
+                    }`}
+                    title={`${
+                      getWeekDayName(
+                        getFullDate(item.date, item.monthName, item.year)
+                      ).day
+                    }, ${getFullDate(item.date, item.monthName, item.year)}`}
+                    onClick={() => runOnClick(item)}
+                    onMouseEnter={() => {
+                      dateRangeSelect ? runOnHover(item) : console.log();
+                    }}
+                  >
+                    {item.date}
+                  </div>
+                )
+              )}
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </>
   );

@@ -15,6 +15,7 @@ function App() {
   const dateRangeSelect = (dates) => {
     console.log(dates);
   };
+
   return (
     <>
       <CustomCalendar
